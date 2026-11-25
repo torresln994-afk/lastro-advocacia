@@ -534,7 +534,8 @@ footer .note{max-width:60ch}
 .qa summary i{margin-left:auto}
 .qa summary:hover{transform:translateX(6px)}
 .qa details[open] summary{color:var(--accent)}
-.qa .ans{padding-left:44px}
+.qa .ans{padding-left:68px}
+@media (max-width:560px){.qa .ans{padding-left:0}}
 .qa details::details-content{block-size:0;overflow:hidden;transition:block-size .6s var(--ease-out),content-visibility .6s allow-discrete}
 .qa details[open]::details-content{block-size:auto}
 @media (max-width:860px){.qa details::before{left:-10px}}
