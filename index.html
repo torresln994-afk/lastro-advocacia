@@ -124,7 +124,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* abertura: o prumo desce, o nome sobe, as portas se abrem para a escada */
 .intro{display:none;position:fixed;inset:0;z-index:90;pointer-events:none}
-html.intro-on .intro{display:block;animation:introKill 0s 6s forwards}
+html.intro-on .intro{display:block;animation:introKill 0s 8s forwards}
 @keyframes introKill{to{visibility:hidden}}
 .intro .half{position:absolute;left:0;right:0;height:50.5%;background:#0c0e0d;transition:transform 1.25s var(--ease-io)}
 .intro .half.t{top:0}
@@ -157,7 +157,7 @@ html.intro-on .intro{display:block;animation:introKill 0s 6s forwards}
 .arch .tr{right:0;top:0;border-width:1px 1px 0 0}
 .arch .bl{left:0;bottom:0;border-width:0 0 1px 1px}
 .arch .br{right:0;bottom:0;border-width:0 1px 1px 0}
-.arch .coord{position:absolute;left:34px;top:-5px;font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:rgba(238,234,226,.78);text-shadow:0 1px 3px rgba(8,10,9,.9)}
+.arch .coord{position:absolute;left:34px;bottom:-6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:rgba(238,234,226,.78);text-shadow:0 1px 3px rgba(8,10,9,.9)}
 .gauge{position:absolute;right:0;top:50%;height:34vh;width:26px;transform:translateY(-50%)}
 .gauge .ticks{position:absolute;right:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(rgba(201,167,126,.75) 0 1px,transparent 1px 8px);-webkit-mask:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
 .gauge .ticks::after{content:"";position:absolute;right:0;top:0;bottom:0;width:1px;background:rgba(201,167,126,.5)}
@@ -920,7 +920,10 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
       setTimeout(() => { intro.remove(); document.documentElement.classList.remove('intro-on'); }, 1500);
     };
     evs.forEach(t => addEventListener(t, open, { passive: true }));
-    setTimeout(open, 2700);
+    // abre só depois que a assinatura terminou de aparecer (carregamento lento não corta a abertura)
+    const sub = intro.querySelector('.sub');
+    sub.addEventListener('animationend', () => setTimeout(open, 750), { once: true });
+    setTimeout(open, 5200);
   }
 
   /* luz e paralaxe seguem o mouse, com inércia */
