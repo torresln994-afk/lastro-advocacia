@@ -483,6 +483,66 @@ footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
 footer .brand{color:var(--ivory)}
 footer .note{max-width:60ch}
 
+/* ---------- seções, segunda passada ---------- */
+/* faixa: as seis frentes passam como letreiro gravado */
+.ticker{position:relative;overflow:hidden;background:var(--night);padding:clamp(30px,4.4vw,56px) 0;border-top:1px solid var(--line-d)}
+.ticker .track{display:flex;align-items:center;gap:.5em;width:max-content;white-space:nowrap;font-family:var(--display);font-size:clamp(46px,7vw,112px);line-height:1;--sp:0;transform:translateX(calc(4vw - var(--sp) * 42%));will-change:transform}
+.ticker .track span:nth-child(4n+1){color:var(--ivory)}
+.ticker .track span:nth-child(4n+3){color:transparent;-webkit-text-stroke:1px rgba(226,201,162,.6)}
+.ticker .track i{font-style:normal;font-size:.28em;color:var(--bronze)}
+
+/* áreas: lista editorial, preenchimento de mármore verde no hover */
+.alist{border-top:1px solid var(--line-l)}
+.alist li{background:transparent;border:0;border-bottom:1px solid var(--line-l);border-radius:0;margin:0;box-shadow:none;padding:34px 28px;overflow:hidden;isolation:isolate;grid-template-columns:120px minmax(0,1fr) minmax(0,1.1fr) 44px}
+.alist li::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,#1E4A3E,#2F6A58 70%,#3A7764);transform:scaleY(0);transform-origin:50% 100%;transition:transform .65s var(--ease-out)}
+.alist li:hover::before{transform:scaleY(1)}
+.alist li::after{background:#E2C9A2}
+.alist .n{font-family:var(--display);font-size:clamp(42px,4.2vw,64px);line-height:.8;color:transparent;-webkit-text-stroke:1px var(--bronze-ink);transition:-webkit-text-stroke-color .4s,transform .6s var(--ease-out)}
+.alist li:hover .n{-webkit-text-stroke-color:#E2C9A2;transform:translateX(6px)}
+.alist h3,.alist p{transition:color .4s,transform .6s var(--ease-out)}
+.alist li:hover h3{color:var(--ivory)}
+.alist li:hover p{color:rgba(238,234,226,.86)}
+.alist .go{align-self:center;justify-self:end;width:44px;height:44px;border-radius:50%;border:1px solid rgba(27,32,30,.28);display:grid;place-items:center;color:var(--ink);transform:rotate(-45deg);transition:transform .6s var(--ease-out),background-color .4s,border-color .4s}
+.alist .go svg{width:16px;height:16px}
+.alist li:hover .go{background:var(--ivory);border-color:var(--ivory);transform:rotate(0)}
+@media (max-width:760px){.alist li{grid-template-columns:64px minmax(0,1fr);padding:26px 16px}.alist .go{display:none}.alist .n{font-size:40px}}
+
+/* compromisso: a pedra ganha um pedestal escuro com moldura de bronze */
+.holdbox{padding:60px 28px 48px;border-radius:6px;background:radial-gradient(ellipse 90% 70% at 50% 25%,#26332D,#141A17 75%);box-shadow:0 50px 90px -45px rgba(27,32,30,.7)}
+.holdbox::before{content:"";position:absolute;inset:12px;border:1px solid rgba(185,150,107,.38);border-radius:3px;pointer-events:none}
+.holdbox::after{content:"Pedra fundamental";position:absolute;top:22px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--bronze);white-space:nowrap}
+.holdhint{color:rgba(238,234,226,.72)}
+.holdbtn{background:var(--ivory);border-color:rgba(185,150,107,.6);box-shadow:0 0 0 8px rgba(185,150,107,.08)}
+.vows li{opacity:.5}
+.vows li i{font-family:var(--display);font-size:22px;width:44px;color:transparent;-webkit-text-stroke:1px var(--bronze-ink)}
+.pact.complete .vows li i{color:var(--bronze-ink);transition:color .8s var(--ease-out)}
+
+/* como funciona: numeral vazado atrás de cada passo */
+.steps .list{counter-reset:st}
+.step{counter-increment:st}
+.step > div:last-child{position:relative;isolation:isolate}
+.step > div:last-child::before{content:"0" counter(st);position:absolute;right:0;top:-.42em;z-index:-1;font-family:var(--display);font-size:clamp(150px,17vw,260px);line-height:1;color:transparent;-webkit-text-stroke:1px rgba(185,150,107,.26);transform:translateY(calc((1 - var(--sp)) * 80px));opacity:var(--sp);pointer-events:none}
+
+/* perguntas: numeradas, abrem suave, barra verde na aberta */
+:root{interpolate-size:allow-keywords}
+.qa{counter-reset:q}
+.qa details{position:relative}
+.qa details::before{content:"";position:absolute;left:-18px;top:18px;bottom:18px;width:2px;background:var(--accent);transform:scaleY(0);transform-origin:top;transition:transform .55s var(--ease-out)}
+.qa details[open]::before{transform:scaleY(1)}
+.qa summary{counter-increment:q;justify-content:flex-start;transition:color .3s,transform .5s var(--ease-out)}
+.qa summary::before{content:counter(q,decimal-leading-zero);flex:none;width:44px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bronze-ink);align-self:center}
+.qa summary i{margin-left:auto}
+.qa summary:hover{transform:translateX(6px)}
+.qa details[open] summary{color:var(--accent)}
+.qa .ans{padding-left:44px}
+.qa details::details-content{block-size:0;overflow:hidden;transition:block-size .6s var(--ease-out),content-visibility .6s allow-discrete}
+.qa details[open]::details-content{block-size:auto}
+@media (max-width:860px){.qa details::before{left:-10px}}
+
+/* contato: o rótulo acende com o campo */
+.field label{transition:color .3s}
+.field:focus-within label{color:var(--bronze)}
+
 body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused !important}
 
 @media (prefers-reduced-motion: reduce){
@@ -640,6 +700,10 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
       </div>
     </div>
   </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="track" data-sp="2.2"><span>Empresarial</span><i>◆</i><span>Tributário</span><i>◆</i><span>Família e sucessões</span><i>◆</i><span>Imobiliário</span><i>◆</i><span>Trabalhista</span><i>◆</i><span>Cível</span><i>◆</i><span>Empresarial</span><i>◆</i><span>Tributário</span></div>
+  </div>
 
   <section class="sec areas light io" id="areas" aria-labelledby="t-areas">
     <div class="wrap">
@@ -1146,6 +1210,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     }
   }), { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.io').forEach(el => revealIO.observe(el));
+  document.querySelectorAll('.alist li').forEach(li => li.insertAdjacentHTML('beforeend', '<span class="go" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>'));
   const liveIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('live', e.isIntersecting)));
   document.querySelectorAll('.sec').forEach(el => liveIO.observe(el));
   document.addEventListener('visibilitychange', () => document.body.classList.toggle('paused', document.hidden));
