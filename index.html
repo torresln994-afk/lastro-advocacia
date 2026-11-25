@@ -16,6 +16,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Marcellus&display=swap" rel="stylesheet">
+<script>
+/* abertura de marca: só na primeira visita da sessão, no topo e sem movimento reduzido */
+(function () {
+  try {
+    var mq = function (q) { return matchMedia(q).matches; };
+    if (mq('(prefers-reduced-motion: reduce)') || mq('(orientation: landscape) and (pointer: coarse) and (max-height: 560px)')) return;
+    if (sessionStorage.getItem('lastroIntro') === '1' || location.hash) return;
+    document.documentElement.classList.add('intro-on');
+  } catch (e) {}
+})();
+</script>
 <style>
 :root{
   --night:#1A1D1B;          /* sombra da escadaria, verde-grafite */
@@ -110,6 +121,65 @@ button,input,select,textarea{font:inherit;color:inherit}
 .lbx{position:absolute;left:0;right:0;height:7.5vh;background:#0c0e0d;z-index:3;pointer-events:none;will-change:transform}
 .lbx.t{top:0;transform-origin:top;transform:scaleY(var(--lb))}
 .lbx.b{bottom:0;transform-origin:bottom;transform:scaleY(var(--lb))}
+
+/* abertura: o prumo desce, o nome sobe, as portas se abrem para a escada */
+.intro{display:none;position:fixed;inset:0;z-index:90;pointer-events:none}
+html.intro-on .intro{display:block;animation:introKill 0s 6s forwards}
+@keyframes introKill{to{visibility:hidden}}
+.intro .half{position:absolute;left:0;right:0;height:50.5%;background:#0c0e0d;transition:transform 1.25s var(--ease-io)}
+.intro .half.t{top:0}
+.intro .half.b{bottom:0}
+.intro.open .half.t{transform:translateY(-101%)}
+.intro.open .half.b{transform:translateY(101%)}
+.intro .core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ivory);transition:opacity .55s var(--ease-out),filter .55s var(--ease-out),transform 1.25s var(--ease-io)}
+.intro.open .core{opacity:0;filter:blur(6px);transform:scale(1.08)}
+.intro svg{width:24px;height:112px;overflow:visible}
+.intro .ln{fill:none;stroke:var(--bronze);stroke-width:1;stroke-dasharray:86;stroke-dashoffset:86;animation:introLine .9s var(--ease-io) .2s forwards}
+.intro .bob{fill:var(--bronze);opacity:0;transform-origin:12px 86px;animation:introBob 1.6s var(--ease-out) .95s forwards}
+.intro .word{margin-top:28px;display:flex;font-family:var(--display);font-size:clamp(46px,8vw,124px);letter-spacing:.16em;padding-left:.16em;line-height:1;overflow:hidden;padding-bottom:.1em}
+.intro .word span{display:inline-block;transform:translateY(115%);animation:introUp 1.05s var(--ease-out) forwards;animation-delay:calc(1s + var(--i) * .065s)}
+.intro .sub{margin-top:22px;font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--bronze);opacity:0;animation:introFade 1s var(--ease-out) 1.55s forwards}
+@keyframes introLine{to{stroke-dashoffset:0}}
+@keyframes introBob{0%{opacity:0;transform:translateY(-12px) rotate(9deg)}35%{opacity:1}65%{transform:rotate(-3deg)}100%{opacity:1;transform:none}}
+@keyframes introUp{to{transform:none}}
+@keyframes introFade{to{opacity:1}}
+
+/* luz de janela que acompanha o mouse */
+.lamp{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.9;
+  background:radial-gradient(640px circle at var(--lx,68%) var(--ly,38%),rgba(255,232,196,.11),rgba(255,232,196,0) 62%)}
+.poster,.stage video{scale:1.05;translate:calc(var(--mx,0) * -16px) calc(var(--my,0) * -10px)}
+
+/* moldura de prancha de arquitetura + medidor de profundidade */
+.arch{position:absolute;z-index:3;pointer-events:none;top:92px;bottom:calc(7.5vh + 16px);left:clamp(72px,5.4vw,84px);right:clamp(24px,2.6vw,40px);opacity:0;transition:opacity 1.2s var(--ease-out) .4s}
+.stage.armed .arch{opacity:1}
+.arch .cn{position:absolute;width:22px;height:22px;border:0 solid rgba(201,167,126,.7)}
+.arch .tl{left:0;top:0;border-width:1px 0 0 1px}
+.arch .tr{right:0;top:0;border-width:1px 1px 0 0}
+.arch .bl{left:0;bottom:0;border-width:0 0 1px 1px}
+.arch .br{right:0;bottom:0;border-width:0 1px 1px 0}
+.arch .coord{position:absolute;left:34px;top:-5px;font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:rgba(238,234,226,.78);text-shadow:0 1px 3px rgba(8,10,9,.9)}
+.gauge{position:absolute;right:0;top:50%;height:34vh;width:26px;transform:translateY(-50%)}
+.gauge .ticks{position:absolute;right:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(rgba(201,167,126,.75) 0 1px,transparent 1px 8px);-webkit-mask:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+.gauge .ticks::after{content:"";position:absolute;right:0;top:0;bottom:0;width:1px;background:rgba(201,167,126,.5)}
+.gauge .mark{position:absolute;right:0;top:0;width:22px;height:1px;background:var(--ivory);box-shadow:0 0 10px rgba(255,232,196,.8);transform:translateY(calc(var(--hp,0) * 34vh))}
+.gauge .read{position:absolute;right:0;top:calc(100% + 14px);white-space:nowrap;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ivory);text-shadow:0 1px 3px rgba(8,10,9,.9)}
+
+/* primeira faixa: assinatura editorial */
+.b1{width:min(780px,54vw)}
+.band.b1 .kick{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.b1 .kick b{font-weight:500;color:var(--ivory)}
+.b1 .kick i{display:block;width:42px;height:1px;background:currentColor;opacity:.7}
+.b1 h1,.b1 .soft{font-family:var(--display);font-weight:400;font-size:clamp(52px,7.2vw,116px);line-height:.98;letter-spacing:-.01em}
+.b1 em{font-style:normal;color:#E2C9A2;text-shadow:none;filter:drop-shadow(0 2px 3px rgba(8,10,9,.9)) drop-shadow(0 8px 30px rgba(8,10,9,.7));
+  background:linear-gradient(100deg,#C9A77E 0%,#F3E2C4 38%,#C9A77E 52%,#E2C9A2 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:sheen 7s ease-in-out -1s infinite}
+@keyframes sheen{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+.fx-blur .row{opacity:clamp(0,(var(--k) - .55)*2.6,1);transform:translateY(calc((1 - clamp(0,(var(--k) - .55)*2.6,1))*14px))}
+@media (orientation: portrait) and (max-width: 1024px), (max-width: 720px){
+  .arch{left:14px;right:14px;top:80px;bottom:calc(5vh + 12px)}
+  .arch .coord,.gauge{display:none}
+  .b1{width:auto}
+}
+@media (max-width:1100px) and (min-width:721px){.arch{left:24px}}
 .ring{position:absolute;left:50%;bottom:calc(7.5vh + 26px);width:44px;height:44px;margin-left:-22px;color:var(--bronze);opacity:.9;transition:opacity .6s var(--ease-out);z-index:4}
 .ring circle.track{opacity:.22}
 .ring circle.prog{transform:rotate(-90deg);transform-origin:24px 24px;stroke-dashoffset:var(--ld,126)}
@@ -191,7 +261,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 @media (orientation: landscape) and (pointer: coarse) and (max-height: 560px), (prefers-reduced-motion: reduce){
   .hero{height:auto;min-height:100svh}
   .stage{position:relative;height:auto;min-height:100svh;background:#2a2b28 url("assets/hero-ending.jpg") 72% center/cover}
-  .stage video,.stage .poster,.band,.ring,.cue,.hud,.lbx{display:none}
+  .stage video,.stage .poster,.band,.ring,.cue,.hud,.lbx,.arch,.lamp{display:none}
   .scrim{background:linear-gradient(90deg,rgba(10,12,11,.78),rgba(10,12,11,.35) 60%,rgba(10,12,11,.1))}
   .static{display:flex;position:relative;min-height:100svh;flex-direction:column;justify-content:center;padding:120px clamp(22px,8vw,140px) 56px;color:var(--ivory);text-shadow:var(--tshadow)}
   .static .kick{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--bronze);margin-bottom:18px}
@@ -438,6 +508,14 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
 </style>
 </head>
 <body>
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="half t"></div><div class="half b"></div>
+  <div class="core">
+    <svg viewBox="0 0 24 112"><path class="ln" d="M12 0v86"/><path class="bob" d="M12 86 4 94l8 17 8-17z"/></svg>
+    <div class="word"><span style="--i:0">L</span><span style="--i:1">A</span><span style="--i:2">S</span><span style="--i:3">T</span><span style="--i:4">R</span><span style="--i:5">O</span></div>
+    <div class="sub">Advocacia · São Paulo · desde 2009</div>
+  </div>
+</div>
 <a class="skip" href="#main">Pular para o conteúdo</a>
 <div class="env" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
@@ -467,16 +545,26 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     <div class="poster" aria-hidden="true"></div>
     <video id="hero" preload="none" muted playsinline aria-hidden="true" tabindex="-1"></video>
     <div class="scrim" aria-hidden="true"></div>
+    <div class="lamp" aria-hidden="true"></div>
     <div class="lbx t" aria-hidden="true"></div>
     <div class="lbx b" aria-hidden="true"></div>
 
-    <div class="band l fx-blur" data-a="0" data-b="0.12" style="--sa:.62">
-      <span class="kick">Lastro Advocacia</span>
+    <div class="arch" aria-hidden="true">
+      <i class="cn tl"></i><i class="cn tr"></i><i class="cn bl"></i><i class="cn br"></i>
+      <span class="coord">Itaim Bibi · 23°35′S 46°41′O</span>
+      <div class="gauge"><span class="ticks"></span><b class="mark"></b><span class="read" id="depth">Nível 0,0 m</span></div>
+    </div>
+
+    <div class="band l fx-blur b1" data-a="0" data-b="0.12" style="--sa:.62">
+      <span class="kick"><b>Lastro Advocacia</b><i></i>São Paulo · desde 2009</span>
       <div class="stack">
-        <h1 class="sharp">Firmeza para decidir.</h1>
-        <div class="soft" aria-hidden="true" style="font-family:var(--display);font-size:clamp(44px,5.6vw,84px);line-height:1.04">Firmeza para decidir.</div>
+        <h1 class="sharp">Firmeza para <em>decidir.</em></h1>
+        <div class="soft" aria-hidden="true">Firmeza para decidir.</div>
       </div>
       <p>Advocacia sob medida para pessoas e empresas que não aceitam ficar no escuro.</p>
+      <div class="row">
+        <a class="btn" href="#contato">Agendar uma conversa <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      </div>
     </div>
 
     <div class="band r fx-orbit" data-a="0.15" data-b="0.27" style="--sa:.64">
@@ -808,7 +896,47 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   video.addEventListener('error', () => { seekBusy = false; pendingTime = null; failVideo(); });
 
   let loadK = 0, introLB = 0;
-  const cache = { lb: -1, pan: -1, hp: -1, ch: -1, past: null };
+  const cache = { lb: -1, pan: -1, hp: -1, ch: -1, dep: -1, past: null };
+  const arch = stage.querySelector('.arch');
+  const depthEl = document.getElementById('depth');
+
+  /* abertura de marca */
+  const intro = document.getElementById('intro');
+  function runIntro(then) {
+    const arm = () => stage.classList.add('armed');
+    if (!document.documentElement.classList.contains('intro-on') || scrollY > 40) {
+      document.documentElement.classList.remove('intro-on');
+      if (intro) intro.remove();
+      arm(); then(); return;
+    }
+    try { sessionStorage.setItem('lastroIntro', '1'); } catch (e) {}
+    const evs = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+    let opened = false;
+    const open = () => {
+      if (opened) return; opened = true;
+      evs.forEach(t => removeEventListener(t, open));
+      intro.classList.add('open');
+      setTimeout(() => { arm(); then(); }, 280);
+      setTimeout(() => { intro.remove(); document.documentElement.classList.remove('intro-on'); }, 1500);
+    };
+    evs.forEach(t => addEventListener(t, open, { passive: true }));
+    setTimeout(open, 2700);
+  }
+
+  /* luz e paralaxe seguem o mouse, com inércia */
+  const FINE_HERO = matchMedia('(hover: hover) and (pointer: fine)');
+  let mxT = 0, myT = 0, mx = 0, my = 0, mRaf = null;
+  function mouseTick() {
+    mx += (mxT - mx) * 0.08; my += (myT - my) * 0.08;
+    stage.style.setProperty('--mx', mx.toFixed(3)); stage.style.setProperty('--my', my.toFixed(3));
+    stage.style.setProperty('--lx', ((mx + 0.5) * 100).toFixed(1) + '%'); stage.style.setProperty('--ly', ((my + 0.5) * 100).toFixed(1) + '%');
+    mRaf = (Math.abs(mxT - mx) > 0.001 || Math.abs(myT - my) > 0.001) ? requestAnimationFrame(mouseTick) : null;
+  }
+  stage.addEventListener('pointermove', e => {
+    if (!FINE_HERO.matches || RM.matches) return;
+    mxT = e.clientX / innerWidth - 0.5; myT = e.clientY / innerHeight - 0.5;
+    if (mRaf === null) mRaf = requestAnimationFrame(mouseTick);
+  });
   function updateCaptions(p) {
     for (const b of bands) {
       const f = Math.min(0.02, (b.b - b.a) / 3);
@@ -831,7 +959,10 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
       if (pan !== cache.pan) { cache.pan = pan; stage.style.setProperty('--pan', pan); }
     }
     const hp = Math.round(p * 100) / 100;
-    if (hp !== cache.hp) { cache.hp = hp; hud.style.setProperty('--hp', hp); }
+    if (hp !== cache.hp) { cache.hp = hp; hud.style.setProperty('--hp', hp); arch.style.setProperty('--hp', hp); }
+    // profundidade: a câmera desce 18,6 m pela escada e depois segue no térreo
+    const dep = Math.round(Math.min(1, p / 0.43) * 186) / 10;
+    if (dep !== cache.dep) { cache.dep = dep; depthEl.textContent = 'Nível −' + dep.toFixed(1).replace('.', ',') + ' m'; }
     let ch = 0; for (let i = 0; i < CHAPTERS.length; i++) if (p >= CHAPTERS[i][0]) ch = i;
     if (ch !== cache.ch) { const first = cache.ch === -1; cache.ch = ch; hudN.textContent = CHAPTERS[ch][1]; hudT.textContent = CHAPTERS[ch][2]; if (!first) { hud.classList.remove('flip'); void hud.offsetWidth; hud.classList.add('flip'); } }
     const past = p > 0.03;
@@ -904,7 +1035,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     const start = () => { if (started) return; started = true; loadHeroBlob().catch(failVideo); };
     const img = new Image(); img.onload = start; img.onerror = start; img.src = 'assets/hero-poster.jpg';
     setTimeout(start, 4000);
-    loadRamp();
+    runIntro(loadRamp);
     // o Safari do iPhone só pinta quadros buscados depois de tocar uma vez: prepara no primeiro toque
     const prime = () => {
       if (video.readyState < 2) return;
